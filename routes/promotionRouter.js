@@ -12,7 +12,7 @@ promotionRouter.route('/:promotionId')
     next();
 })
 
-.put((req, res) => {
+.put(authenticate.verifyUser, (req, res) => {
     Promotion.findById(req.params.promotionId)
     .then(promotion => {
         if (promotion) {
@@ -28,7 +28,7 @@ promotionRouter.route('/:promotionId')
     .catch(err => next(err))
 })
 
-.delete((req, res) => {
+.delete(authenticate.verifyUser, (req, res) => {
     res.end(`Deleting promotion: ${req.params.promotionId}`);
 });
 
@@ -46,7 +46,7 @@ promotionRouter.route('/')
     res.end(`Will send all the promotions to you`);
 })
 
-.post((req, res, next) => {
+.post(authenticate.verifyUser, (req, res, next) => {
     Promotion.create(req.body)
     .then(promotion => {
         console.log('Campsite Created ', promotion);
@@ -57,13 +57,13 @@ promotionRouter.route('/')
     .catch(err => next(err));
 })
 
-.put((req, res) => {
+.put(authenticate.verifyUser, (req, res) => {
     Promotion.find()
     res.statusCode = 403;
     res.end(`PUT operation not supported on /promotions/${req.params.promotionId}`);
 })
 
-.delete((req, res) => {
+.delete(authenticate.verifyUser, (req, res) => {
     Promotion.find()
     res.end(`Deleting promotion: ${req.params.promotionId}`);
 });
