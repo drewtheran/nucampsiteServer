@@ -21,7 +21,7 @@ partnerRouter.route('/')
     res.end(`Will send all the partners to you`);
 })
 
-.post(authenticate.verifyUser, (req, res, next) => {
+.post(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
     Partner.create(req.body)
     .then(partner => {
         console.log('Partner Created ', partner);
@@ -32,19 +32,19 @@ partnerRouter.route('/')
     .catch(err => next(err));
 })
 
-.put(authenticate.verifyUser, (req, res) => {
+.put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     Partner.find()
     res.statusCode = 403;
     res.end(`PUT operation not supported on /partners/${req.params.partnerId}`);
 })
 
-.delete(authenticate.verifyUser, (req, res) => {
+.delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     Partner.find()
     res.end(`Deleting partner: ${req.params.partnerId}`);
 });
 
 partnerRouter.route('/:partnerId')
-.delete(authenticate.verifyUser, (req, res, next) => {
+.delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
     Partner.findById(req.params.partnerId)
     .then(partner => {
         if (partner) {
@@ -79,7 +79,7 @@ partnerRouter.route('/:partnerId')
     })
     .catch(err => next(err))
 })
-.put(authenticate.verifyUser, (req, res) => {
+.put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     Partner.findById(req.params.partnerId)
     .then(partner => {
         if (partner) {

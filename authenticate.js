@@ -2,8 +2,10 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const User = require('./models/user');
 const JwtStrategy = require('passport-jwt').Strategy;
-const ExtractJwt = require('passport-jwt');
+const ExtractJwt = require('passport-jwt').ExtractJwt;
 const jwt = require('jsonwebtoken'); //used to create, sign, and verify tokens.
+const config = require('./config.js');
+
 
 exports.local = passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
@@ -16,6 +18,16 @@ exports.getToken = function(user) {
 const opts = {};
 opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
 opts.secretOrKey = config.secretKey;
+
+function verifyAdmin (req, res, next) {
+    if (req.user.admin) {
+        return next()
+    } else {
+        const error = new Error("You are not authorized to see this route");
+        error.status = 403;
+        return next(error);
+    }
+}
 
 exports.jwtPassport = passport.use(
     new JwtStrategy(
@@ -36,3 +48,4 @@ exports.jwtPassport = passport.use(
 );
 
 exports.verifyUser = passport.authenticate('jwt', {session: false});
+exports.verifyAdmin = verifyAdmin;

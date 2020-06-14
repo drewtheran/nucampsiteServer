@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const Promotion = require('../models/promotion');
+const authenticate = require('../authenticate');
 
 const promotionRouter = express.Router();
 
@@ -12,7 +13,7 @@ promotionRouter.route('/:promotionId')
     next();
 })
 
-.put(authenticate.verifyUser, (req, res) => {
+.put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     Promotion.findById(req.params.promotionId)
     .then(promotion => {
         if (promotion) {
@@ -28,7 +29,7 @@ promotionRouter.route('/:promotionId')
     .catch(err => next(err))
 })
 
-.delete(authenticate.verifyUser, (req, res) => {
+.delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     res.end(`Deleting promotion: ${req.params.promotionId}`);
 });
 
@@ -46,7 +47,7 @@ promotionRouter.route('/')
     res.end(`Will send all the promotions to you`);
 })
 
-.post(authenticate.verifyUser, (req, res, next) => {
+.post(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
     Promotion.create(req.body)
     .then(promotion => {
         console.log('Campsite Created ', promotion);
@@ -57,13 +58,13 @@ promotionRouter.route('/')
     .catch(err => next(err));
 })
 
-.put(authenticate.verifyUser, (req, res) => {
+.put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     Promotion.find()
     res.statusCode = 403;
     res.end(`PUT operation not supported on /promotions/${req.params.promotionId}`);
 })
 
-.delete(authenticate.verifyUser, (req, res) => {
+.delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     Promotion.find()
     res.end(`Deleting promotion: ${req.params.promotionId}`);
 });
