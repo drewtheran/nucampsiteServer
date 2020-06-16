@@ -16,12 +16,12 @@ partnerRouter.route('/')
     next();
 })
 
-.get((req, res) => {
+.get(cors.cors, (req, res) => {
     Partner.find()
     res.end(`Will send all the partners to you`);
 })
 
-.post(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
+.post(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
     Partner.create(req.body)
     .then(partner => {
         console.log('Partner Created ', partner);
@@ -32,19 +32,19 @@ partnerRouter.route('/')
     .catch(err => next(err));
 })
 
-.put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
+.put(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     Partner.find()
     res.statusCode = 403;
     res.end(`PUT operation not supported on /partners/${req.params.partnerId}`);
 })
 
-.delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
+.delete(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     Partner.find()
     res.end(`Deleting partner: ${req.params.partnerId}`);
 });
 
 partnerRouter.route('/:partnerId')
-.delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
+.delete(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
     Partner.findById(req.params.partnerId)
     .then(partner => {
         if (partner) {
@@ -64,7 +64,7 @@ partnerRouter.route('/:partnerId')
     })
     .catch(err => next(err));
 })
-.get((req, res, next) => {
+.get(cors.cors, (req, res, next) => {
     Partner.findById(req.params.partnerId)
     .then(partner => {
         if (partner) {
@@ -79,7 +79,7 @@ partnerRouter.route('/:partnerId')
     })
     .catch(err => next(err))
 })
-.put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
+.put(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     Partner.findById(req.params.partnerId)
     .then(partner => {
         if (partner) {
