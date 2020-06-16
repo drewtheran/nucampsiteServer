@@ -6,7 +6,7 @@ const authenticate = require('../authenticate');
 
 /* GET users listing. */
 
-router.get('/', authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
+router.get('/', cors.cors, (req, res, next) => {
     User.find()
     .then(users => {
         res.statusCode = 200;
@@ -16,7 +16,7 @@ router.get('/', authenticate.verifyUser, authenticate.verifyAdmin, (req, res, ne
     .catch(err => next(err));
 })
 
-router.post('/signup', (req, res) => {
+router.post('/signup', cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     User.register(
         new User({username: req.body.username}),
         req.body.password,
@@ -50,14 +50,14 @@ router.post('/signup', (req, res) => {
     );
 });
 
-router.post('/login', passport.authenticate('local'), (req, res) => {
+router.post('/login', passport.authenticate('local'), cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     const token = authenticate.getToken({_id: req.user._id});
     res.statusCode = 200;
     res.setHeader('Content-Type', 'applicatoin/json');
     res.json({success: true, status: 'You are successfully logged in!'});
 });
 
-router.get('/logout', (req, res, next) => {
+router.get('/logout', cors.cors, (req, res, next) => {
     if (req.session) {
       req.session.destroy();
       res.clearCookie('session-id');
